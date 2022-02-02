@@ -1,0 +1,134 @@
+Task 0:
+Total in 2018: 1328275 events
+
+Task 1:
+Total 48 states, 1717 cities
+
+Task 2:
+Top most rainy cities in 2019:
+1. City Columbus: total 3691 rainy events
+2. City Jacksonville: total 3440 rainy events
+3. City Cleveland: total 2974 rainy events
+
+Task 3:
+The longest snows by year:
+2016: From 3/23/2016 2:57:00 PM to 4/4/2016 5:20:00 PM in Granby
+2017: From 12/4/2017 10:53:00 PM to 1/26/2018 7:34:00 PM in Breckenridge
+2018: From 1/15/2018 7:31:00 PM to 2/7/2018 1:56:00 PM in Kokomo
+2019: From 3/8/2019 9:15:00 AM to 4/1/2019 5:15:00 AM in Point Pleasant
+2020: From 1/20/2020 6:55:00 AM to 1/28/2020 8:15:00 PM in Abingdon
+
+Task 4:
+Count of events before longer than 2 hours in 2019 by state:
+AL: 20 events
+AR: 5 events
+AZ: 6 events
+CA: 1 events
+CO: 6 events
+CT: 2 events
+DE: 8 events
+FL: 9 events
+GA: 0 events
+IA: 6 events
+ID: 0 events
+IL: 0 events
+IN: 5 events
+KS: 3 events
+KY: 31 events
+LA: 8 events
+MA: 1 events
+MD: 2 events
+ME: 11 events
+MI: 5 events
+MN: 1 events
+MO: 12 events
+MS: 4 events
+MT: 1 events
+NC: 5 events
+ND: 0 events
+NE: 0 events
+NH: 0 events
+NJ: 4 events
+NM: 5 events
+NV: 11 events
+NY: 1 events
+OH: 2 events
+OK: 1 events
+OR: 0 events
+PA: 8 events
+RI: 5 events
+SC: 33 events
+SD: 6 events
+TN: 3 events
+TX: 3 events
+UT: 0 events
+VA: 0 events
+VT: 0 events
+WA: 10 events
+WI: 1 events
+WV: 0 events
+WY: 0 events
+
+Task 5:
+The most severe (total length of severe events) city in 2017 by state:
+AL: City Florala: total 1427.6666666666665 hours
+AR: City North Little Rock: total 2510.0333333333338 hours
+AZ: City Coolidge: total 7690.683333333333 hours
+CA: City Camp Pendleton: total 4349.966666666666 hours
+CO: City : total 8270.95 hours
+CT: City Chester: total 472.33333333333303 hours
+DE: City Georgetown: total 106.09999999999997 hours
+FL: City Okeechobee: total 1353.9166666666642 hours
+GA: City Sandersville: total 3333.416666666668 hours
+IA: City Clinton: total 313.3833333333332 hours
+ID: City Mullan: total 1426.4833333333331 hours
+IL: City Freeport: total 344.5499999999995 hours
+IN: City Anderson: total 716.6166666666666 hours
+KS: City Medicine Lodge: total 450.4166666666667 hours
+KY: City Glasgow: total 1059.666666666667 hours
+LA: City New Orleans: total 1538.2500000000005 hours
+MA: City Sandwich: total 1226.516666666663 hours
+MD: City Suitland: total 14994.633333333333 hours
+ME: City Frenchville: total 369.8833333333332 hours
+MI: City Menominee: total 557.0166666666665 hours
+MN: City Thief River Falls: total 640.9499999999999 hours
+MO: City Camdenton: total 623.4499999999996 hours
+MS: City Olive Branch: total 4182.983333333334 hours
+MT: City Thompson Falls-West End: total 769.2833333333332 hours
+NC: City Franklin: total 1564.3333333333303 hours
+ND: City Walhalla: total 3490.3333333333358 hours
+NE: City Columbus city: total 315.2166666666667 hours
+NH: City Sargents: total 6331.716666666671 hours
+NJ: City Lakehurst: total 881.3833333333336 hours
+NM: City Santa Teresa: total 673.1333333333336 hours
+NV: City Henderson: total 255.78333333333333 hours
+NY: City Saranac Lake: total 422.7333333333332 hours
+OH: City Middletown: total 948.7500000000006 hours
+OK: City Yukon: total 7848.666666666666 hours
+OR: City Wolf Creek: total 2129.3166666666675 hours
+PA: City Clearfield: total 1889.7833333333347 hours
+RI: City Block Island: total 490.0333333333332 hours
+SC: City Manning: total 568.0000000000006 hours
+SD: City Rapid City: total 712.3833333333333 hours
+TN: City Dyersburg: total 2060.233333333334 hours
+TX: City Port Aransas: total 6813.9 hours
+UT: City Logan: total 297.2833333333333 hours
+VA: City Tappahannock: total 1679.0833333333333 hours
+VT: City Lyndonville: total 466.5833333333334 hours
+WA: City Enumclaw: total 2357.766666666667 hours
+WI: City Merrill: total 1002.8500000000014 hours
+WV: City Point Pleasant: total 718.6000000000004 hours
+WY: City Lander: total 2766.616666666667 hours
+
+Task 6:
+The most and least frequent event by year:
+2016: Most frequent Rain, average duration: 1.1046131405492527 hours
+      Least frequent Hail, average duration: 0.4025917926565873 hours
+2017: Most frequent Rain, average duration: 1.1334530276714914 hours
+      Least frequent Hail, average duration: 0.5828070175438599 hours
+2018: Most frequent Rain, average duration: 1.1782156364461744 hours
+      Least frequent Hail, average duration: 0.696711259754737 hours
+2019: Most frequent Rain, average duration: 1.1551785006033128 hours
+      Least frequent Hail, average duration: 0.727054794520548 hours
+2020: Most frequent Rain, average duration: 1.1379390352795111 hours
+      Least frequent Hail, average duration: 0.2674041297935103 hours
