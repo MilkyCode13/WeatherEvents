@@ -12,15 +12,7 @@ namespace WeatherEvents
 
         private static void Main()
         {
-            Console.WriteLine("Importing from file...");
-            var stopwatch = Stopwatch.StartNew();
-            IReadOnlyList<WeatherEvent> weatherEvents = ReadWeatherEvents(CsvFilePath);
-            var request = new Request(weatherEvents);
-            stopwatch.Stop();
-            TimeSpan importElapsed = stopwatch.Elapsed;
-            Console.WriteLine($"Import finished, elapsed {importElapsed}\n");
-            
-            // return;
+            Request request = ImportVerbose(out TimeSpan importElapsed);
 
             var calculationTasks = new List<Func<Request, Response>>
             {
@@ -33,28 +25,18 @@ namespace WeatherEvents
                 new CalculationTask6().Calculate,
             };
 
-            Console.WriteLine("Sequential execution (foreach loop):\n" +
-                              "====================================\n");
-            stopwatch = Stopwatch.StartNew();
-            RunWrapper.RunSequential(request, calculationTasks);
-            stopwatch.Stop();
-            TimeSpan sequentialElapsed = stopwatch.Elapsed;
-            Console.WriteLine($"Sequential finished, elapsed {sequentialElapsed}\n");
-            
-            Console.WriteLine("Parallel execution (Parallel.ForEach):\n" +
-                              "======================================\n");
-            stopwatch = Stopwatch.StartNew();
-            RunWrapper.RunParallel(request, calculationTasks);
-            TimeSpan parallelElapsed = stopwatch.Elapsed;
-            Console.WriteLine($"Parallel finished, elapsed {parallelElapsed}\n");
-            
-            Console.WriteLine("Tasks execution (Parallel.ForEach):\n" +
-                              "======================================\n");
-            stopwatch = Stopwatch.StartNew();
-            RunWrapper.RunTasks(request, calculationTasks);
-            TimeSpan tasksElapsed = stopwatch.Elapsed;
-            Console.WriteLine($"Tasks finished, elapsed {tasksElapsed}\n");
+            TimeSpan sequentialElapsed = RunSequentialVerbose(request, calculationTasks);
 
+            TimeSpan parallelElapsed = RunParallelVerbose(request, calculationTasks);
+
+            TimeSpan tasksElapsed = RunTasksVerbose(request, calculationTasks);
+
+            ShowRecap(sequentialElapsed, parallelElapsed, tasksElapsed, importElapsed);
+        }
+
+        private static void ShowRecap(TimeSpan sequentialElapsed, TimeSpan parallelElapsed, TimeSpan tasksElapsed,
+            TimeSpan importElapsed)
+        {
             TimeSpan worst = new List<TimeSpan> {sequentialElapsed, parallelElapsed, tasksElapsed}.Max();
             Console.WriteLine("Total Recap\n" +
                               "=========================================\n" +
@@ -69,33 +51,66 @@ namespace WeatherEvents
                               $"Tasks:        -{(worst - tasksElapsed) / worst * 100:F2}%\n");
         }
 
+        private static TimeSpan RunTasksVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        {
+            Console.WriteLine("Tasks execution (Parallel.ForEach):\n" +
+                              "======================================\n");
+            TimeSpan tasksElapsed = RunStopwatch(RunWrapper.RunTasks, request, calculationTasks);
+            Console.WriteLine($"Tasks finished, elapsed {tasksElapsed}\n");
+            return tasksElapsed;
+        }
+
+        private static TimeSpan RunParallelVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        {
+            Console.WriteLine("Parallel execution (Parallel.ForEach):\n" +
+                              "======================================\n");
+            TimeSpan parallelElapsed = RunStopwatch(RunWrapper.RunParallel, request, calculationTasks);
+            Console.WriteLine($"Parallel finished, elapsed {parallelElapsed}\n");
+            return parallelElapsed;
+        }
+
+        private static TimeSpan RunSequentialVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        {
+            Console.WriteLine("Sequential execution (foreach loop):\n" +
+                              "====================================\n");
+            TimeSpan sequentialElapsed = RunStopwatch(RunWrapper.RunSequential, request, calculationTasks);
+            Console.WriteLine($"Sequential finished, elapsed {sequentialElapsed}\n");
+            return sequentialElapsed;
+        }
+
+        private static TimeSpan RunStopwatch(Action<Request, List<Func<Request, Response>>> runner, Request request,
+            List<Func<Request, Response>> calculationTasks)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            runner(request, calculationTasks);
+            stopwatch.Stop();
+            return stopwatch.Elapsed;
+        }
+
+        private static Request ImportVerbose(out TimeSpan importElapsed)
+        {
+            Console.WriteLine("Importing from file...");
+            var stopwatch = Stopwatch.StartNew();
+            IReadOnlyList<WeatherEvent> weatherEvents = ReadWeatherEvents(CsvFilePath);
+            var request = new Request(weatherEvents);
+            stopwatch.Stop();
+            importElapsed = stopwatch.Elapsed;
+            Console.WriteLine($"Import finished, elapsed {importElapsed}\n");
+            return request;
+        }
+
         private static List<WeatherEvent> ReadWeatherEvents(string filename)
         {
             var weatherEvents = new List<WeatherEvent>();
 
             using var reader = new StreamReader(filename);
             
-            // reader.ReadLine();
-            // string? record;
-            // while ((record = reader.ReadLine()) != null)
-            // {
-            //     weatherEvents.Add(WeatherEvent.Parse(record));
-            // }
-            //
-            // return weatherEvents;
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            List<string> sList = reader.ReadToEnd()
-                .Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                .Skip(1).ToList();
-            stopwatch.Stop();
-            Console.WriteLine($"Reading: {stopwatch.Elapsed:g}");
-            
-            stopwatch.Reset();
-            stopwatch.Start();
-            weatherEvents = sList.Select(WeatherEvent.Parse).ToList();
-            stopwatch.Stop();
-            Console.WriteLine($"Parsing: {stopwatch.Elapsed:g}");
+            reader.ReadLine();
+            string? record;
+            while ((record = reader.ReadLine()) != null)
+            {
+                weatherEvents.Add(WeatherEvent.Parse(record));
+            }
             
             return weatherEvents;
         }
