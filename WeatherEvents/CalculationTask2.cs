@@ -21,7 +21,7 @@ namespace WeatherEvents
 
         protected override Response FormatResponse(IReadOnlyList<(string City, int RainCount)> result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task2(result), elapsed);
+            return new Response(Formatter.Task2(result, elapsed), elapsed);
         }
     }
 }

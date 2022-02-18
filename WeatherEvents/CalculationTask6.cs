@@ -32,7 +32,7 @@ namespace WeatherEvents
         protected override Response FormatResponse(IReadOnlyList<(int Year, WeatherEventType MostFrequentType, double MostFrequentAverage, WeatherEventType
             LeastFrequentType, double LeastFrequentAverage)> result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task6(result), elapsed);
+            return new Response(Formatter.Task6(result, elapsed), elapsed);
         }
     }
 }

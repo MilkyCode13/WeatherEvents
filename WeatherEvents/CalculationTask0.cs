@@ -16,7 +16,7 @@ namespace WeatherEvents
 
         protected override Response FormatResponse(int result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task0(result), elapsed);
+            return new Response(Formatter.Task0(result, elapsed), elapsed);
         }
     }
 }

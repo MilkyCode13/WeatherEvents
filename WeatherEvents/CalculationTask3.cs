@@ -23,7 +23,7 @@ namespace WeatherEvents
 
         protected override Response FormatResponse(IReadOnlyList<(int Year, DateTime StartTime, DateTime EndTime, string City)> result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task3(result), elapsed);
+            return new Response(Formatter.Task3(result, elapsed), elapsed);
         }
     }
 }

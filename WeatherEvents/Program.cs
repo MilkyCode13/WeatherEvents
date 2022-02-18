@@ -25,66 +25,118 @@ namespace WeatherEvents
                 new CalculationTask6().Calculate,
             };
 
-            TimeSpan sequentialElapsed = RunSequentialVerbose(request, calculationTasks);
+            TaskTimers sequentialElapsed = RunSequentialVerbose(request, calculationTasks);
 
-            TimeSpan parallelElapsed = RunParallelVerbose(request, calculationTasks);
+            TaskTimers parallelElapsed = RunParallelVerbose(request, calculationTasks);
 
-            TimeSpan tasksElapsed = RunTasksVerbose(request, calculationTasks);
+            TaskTimers tasksElapsed = RunTasksVerbose(request, calculationTasks);
 
             ShowRecap(sequentialElapsed, parallelElapsed, tasksElapsed, importElapsed);
         }
 
-        private static void ShowRecap(TimeSpan sequentialElapsed, TimeSpan parallelElapsed, TimeSpan tasksElapsed,
+        private static void ShowRecap(TaskTimers sequentialElapsed, TaskTimers parallelElapsed, TaskTimers tasksElapsed,
             TimeSpan importElapsed)
         {
-            TimeSpan worst = new List<TimeSpan> {sequentialElapsed, parallelElapsed, tasksElapsed}.Max();
+            ShowBasicRecap(sequentialElapsed, parallelElapsed, tasksElapsed, importElapsed);
+
+            int taskCount = sequentialElapsed.ElapsedTasks.Length;
+            
+            DisplayHeader(taskCount);
+
+            TaskTimers worst = GetWorst(sequentialElapsed, parallelElapsed, tasksElapsed, taskCount);
+
+            DisplayRow("Sequential", sequentialElapsed, worst);
+            DisplayRow("Parallel", parallelElapsed, worst);
+            DisplayRow("Tasks", tasksElapsed, worst);
+        }
+
+        private static TaskTimers GetWorst(TaskTimers sequentialElapsed, TaskTimers parallelElapsed, TaskTimers tasksElapsed,
+            int taskCount)
+        {
+            TimeSpan worstTotal = new[]
+                {sequentialElapsed.ElapsedTotal, parallelElapsed.ElapsedTotal, tasksElapsed.ElapsedTotal}.Max();
+            TimeSpan[] worstByTask = Enumerable.Range(0, taskCount)
+                .Select(i => new[]
+                    {
+                        sequentialElapsed.ElapsedTasks[i],
+                        parallelElapsed.ElapsedTasks[i],
+                        tasksElapsed.ElapsedTasks[i]
+                    }
+                    .Max())
+                .ToArray();
+            var worst = new TaskTimers(worstTotal, worstByTask);
+            return worst;
+        }
+
+        private static void DisplayHeader(int taskCount)
+        {
+            Console.Write("Execution Type    ");
+            for (var i = 0; i < taskCount; i++)
+            {
+                Console.Write($"Task {i}".PadRight(20));
+            }
+
+            Console.WriteLine("Total");
+            Console.WriteLine(new string('=', 28 + 20 * taskCount));
+        }
+
+        private static void ShowBasicRecap(TaskTimers sequentialElapsed, TaskTimers parallelElapsed, TaskTimers tasksElapsed,
+            TimeSpan importElapsed)
+        {
             Console.WriteLine("Total Recap\n" +
                               "=========================================\n" +
                               $"Reading file: {importElapsed:g}\n" +
-                              $"Sequential:   {sequentialElapsed:g}\n" +
-                              $"Parallel:     {parallelElapsed:g}\n" +
-                              $"Tasks:        {tasksElapsed:g}\n" +
-                              "================================\n" +
-                              $"Worst:        {worst:g}\n" +
-                              $"Sequential:   -{(worst - sequentialElapsed) / worst * 100:F2}%\n" +
-                              $"Parallel:     -{(worst - parallelElapsed) / worst * 100:F2}%\n" +
-                              $"Tasks:        -{(worst - tasksElapsed) / worst * 100:F2}%\n");
+                              $"Sequential:   {sequentialElapsed.ElapsedTotal:g}\n" +
+                              $"Parallel:     {parallelElapsed.ElapsedTotal:g}\n" +
+                              $"Tasks:        {tasksElapsed.ElapsedTotal:g}\n");
         }
 
-        private static TimeSpan RunTasksVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        private static void DisplayRow(string name, TaskTimers elapsed, TaskTimers worst)
         {
-            Console.WriteLine("Tasks execution (Parallel.ForEach):\n" +
-                              "======================================\n");
-            TimeSpan tasksElapsed = RunStopwatch(RunWrapper.RunTasks, request, calculationTasks);
-            Console.WriteLine($"Tasks finished, elapsed {tasksElapsed}\n");
-            return tasksElapsed;
+            Console.Write(name.PadRight(18));
+            for (var i = 0; i < elapsed.ElapsedTasks.Length; i++)
+            {
+                double percent = (worst.ElapsedTasks[i] - elapsed.ElapsedTasks[i]) / worst.ElapsedTasks[i] * 100;
+                Console.Write($"{elapsed.ElapsedTasks[i]:ss\\.fff} (-{percent:F2}%)".PadRight(20));
+            }
+            double totalPercent = (worst.ElapsedTotal - elapsed.ElapsedTotal) / worst.ElapsedTotal * 100;
+            Console.WriteLine($"{elapsed.ElapsedTotal:ss\\.fff} (-{totalPercent:F2}%)".PadRight(20));
         }
 
-        private static TimeSpan RunParallelVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        private static TaskTimers RunTasksVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        {
+            Console.WriteLine("Tasks execution (Tasks.Run):\n" +
+                              "======================================\n");
+            TaskTimers result = RunStopwatch(RunWrapper.RunTasks, request, calculationTasks);
+            Console.WriteLine($"Tasks finished, elapsed {result.ElapsedTotal}\n");
+            return result;
+        }
+
+        private static TaskTimers RunParallelVerbose(Request request, List<Func<Request, Response>> calculationTasks)
         {
             Console.WriteLine("Parallel execution (Parallel.ForEach):\n" +
                               "======================================\n");
-            TimeSpan parallelElapsed = RunStopwatch(RunWrapper.RunParallel, request, calculationTasks);
-            Console.WriteLine($"Parallel finished, elapsed {parallelElapsed}\n");
-            return parallelElapsed;
+            TaskTimers result = RunStopwatch(RunWrapper.RunParallel, request, calculationTasks);
+            Console.WriteLine($"Parallel finished, elapsed {result.ElapsedTotal}\n");
+            return result;
         }
 
-        private static TimeSpan RunSequentialVerbose(Request request, List<Func<Request, Response>> calculationTasks)
+        private static TaskTimers RunSequentialVerbose(Request request, List<Func<Request, Response>> calculationTasks)
         {
             Console.WriteLine("Sequential execution (foreach loop):\n" +
                               "====================================\n");
-            TimeSpan sequentialElapsed = RunStopwatch(RunWrapper.RunSequential, request, calculationTasks);
-            Console.WriteLine($"Sequential finished, elapsed {sequentialElapsed}\n");
-            return sequentialElapsed;
+            TaskTimers result = RunStopwatch(RunWrapper.RunSequential, request, calculationTasks);
+            Console.WriteLine($"Sequential finished, elapsed {result.ElapsedTotal}\n");
+            return result;
         }
 
-        private static TimeSpan RunStopwatch(Action<Request, List<Func<Request, Response>>> runner, Request request,
+        private static TaskTimers RunStopwatch(Func<Request, List<Func<Request, Response>>, TimeSpan[]> runner, Request request,
             List<Func<Request, Response>> calculationTasks)
         {
             var stopwatch = Stopwatch.StartNew();
-            runner(request, calculationTasks);
+            TimeSpan[] elapsedTasks = runner(request, calculationTasks);
             stopwatch.Stop();
-            return stopwatch.Elapsed;
+            return new TaskTimers(stopwatch.Elapsed, elapsedTasks);
         }
 
         private static Request ImportVerbose(out TimeSpan importElapsed)
@@ -122,5 +174,7 @@ namespace WeatherEvents
                 Console.WriteLine(weatherEvent);
             }
         }
+
+        private record TaskTimers(TimeSpan ElapsedTotal, TimeSpan[] ElapsedTasks);
     }
 }

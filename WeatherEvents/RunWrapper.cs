@@ -1,39 +1,52 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace WeatherEvents
 {
-    public class RunWrapper
+    public static class RunWrapper
     {
-        public static void RunSequential(Request request, List<Func<Request, Response>> calculationTasks)
+        public static TimeSpan[] RunSequential(Request request, List<Func<Request, Response>> calculationTasks)
         {
+            var list = new List<TimeSpan>(7);
             foreach (Func<Request,Response> task in calculationTasks)
             {
-                Response response = task(request);
-                Console.WriteLine(response.Payload);
+                (string? payload, TimeSpan elapsed) = task(request);
+                Console.WriteLine(payload);
+                list.Add(elapsed);
             }
+
+            return list.ToArray();
         }
         
-        public static void RunParallel(Request request, List<Func<Request, Response>> calculationTasks)
+        public static TimeSpan[] RunParallel(Request request, List<Func<Request, Response>> calculationTasks)
         {
-            Parallel.ForEach(calculationTasks, task =>
+            var array = new TimeSpan[7];
+            
+            Parallel.ForEach(calculationTasks, (task, state, index) =>
             {
-                Response response = task(request);
-                Console.WriteLine(response.Payload);
+                (string? payload, TimeSpan elapsed) = task(request);
+                Console.WriteLine(payload);
+                array[index] = elapsed;
             });
+
+            return array;
         }
         
-        public static void RunTasks(Request request, List<Func<Request, Response>> calculationTasks)
+        public static TimeSpan[] RunTasks(Request request, List<Func<Request, Response>> calculationTasks)
         {
-            Task[] tasks = calculationTasks.Select(func => Task.Factory.StartNew(() =>
+            var array = new TimeSpan[7];
+            
+            Task[] tasks = calculationTasks.Select((func, i) => Task.Factory.StartNew(() =>
             {
-                Response response = func(request);
-                Console.WriteLine(response.Payload);
+                (string? payload, TimeSpan elapsed) = func(request);
+                Console.WriteLine(payload);
+                array[i] = elapsed;
             })).ToArray();
             Task.WaitAll(tasks);
+            
+            return array;
         }
     }
 }

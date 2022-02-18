@@ -28,7 +28,7 @@ namespace WeatherEvents
 
         protected override Response FormatResponse(IReadOnlyList<(string State, string City, double TotalHours)> result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task5(result), elapsed);
+            return new Response(Formatter.Task5(result, elapsed), elapsed);
         }
     }
 }

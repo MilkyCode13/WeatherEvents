@@ -22,7 +22,7 @@ namespace WeatherEvents
 
         protected override Response FormatResponse(IReadOnlyList<(string State, int EventCount)> result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task4(result), elapsed);
+            return new Response(Formatter.Task4(result, elapsed), elapsed);
         }
     }
 }

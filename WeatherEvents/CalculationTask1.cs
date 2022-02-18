@@ -22,7 +22,7 @@ namespace WeatherEvents
 
         protected override Response FormatResponse((int StateCount, int CityCount) result, TimeSpan elapsed)
         {
-            return new Response(Formatter.Task1(result), elapsed);
+            return new Response(Formatter.Task1(result, elapsed), elapsed);
         }
     }
 }
